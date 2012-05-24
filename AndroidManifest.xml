@@ -23,7 +23,7 @@
 
         <!-- Browser-like Activity to navigate dictionary definitions  -->
         <activity
-            android:name=".LookupActivity"
+            android:name=".GraphicalActivity"
             android:theme="@style/LookupTheme"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
@@ -46,6 +46,18 @@
             </intent-filter>
 
             <meta-data android:name="android.app.searchable" android:resource="@xml/searchable" />
+        </activity>
+
+        <activity
+            android:name=".LookupActivity"
+            android:theme="@style/LookupTheme"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|keyboardHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <!-- Broadcast Receiver that will process AppWidget updates -->
