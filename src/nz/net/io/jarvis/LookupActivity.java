@@ -20,15 +20,12 @@ import nz.net.io.jarvis.SimpleWikiHelper.ApiException;
 import nz.net.io.jarvis.SimpleWikiHelper.ParseException;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -121,20 +118,6 @@ public class LookupActivity extends Activity implements AnimationListener {
 
         // Handle incoming intents as possible searches or links
         onNewIntent(getIntent());
-        /*
-        // get a Calendar object with current time
-        Calendar cal = Calendar.getInstance();
-        // add 5 minutes to the calendar object
-        cal.add(Calendar.SECOND, 10);
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("alarm_message", "O'Doyle Rules!");
-        // In reality, you would want to have a static variable for the request code instead of 192837
-        PendingIntent sender = PendingIntent.getBroadcast(this, 192837, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Get the AlarmManager service
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
-        */
     }
 
     /**

@@ -16,10 +16,6 @@
 
 package nz.net.io.jarvis;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.WebView;
@@ -58,13 +54,6 @@ public class ExtendedWikiHelper extends SimpleWikiHelper {
      */
     private static final Pattern sSectionSplit =
         Pattern.compile("^=+(.+?)=+.+?(?=^=)", Pattern.MULTILINE | Pattern.DOTALL);
-
-    /**
-     * When picking random words in {@link #getRandomWord()}, we sometimes
-     * encounter special articles or templates. This pattern ignores any words
-     * like those, usually because they have ":" or other punctuation.
-     */
-    private static final Pattern sInvalidWord = Pattern.compile("[^A-Za-z0-9 ]");
 
     /**
      * {@link Uri} authority to use when creating internal links.
