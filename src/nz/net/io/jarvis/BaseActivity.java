@@ -264,7 +264,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
         @Override
         protected void onProgressUpdate(String... args) {
             String searchWord = args[0];
-            if (searchWord.substring(0, 7).equals("http://")) {
+            if (searchWord.length() > 7 && searchWord.substring(0, 7).equals("http://")) {
                 searchWord = searchWord.substring(30).replace('/',' ');
             }
             setEntryTitle(searchWord);

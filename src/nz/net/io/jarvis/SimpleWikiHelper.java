@@ -131,7 +131,7 @@ public class SimpleWikiHelper {
         String data = "";
 
         // Check if this is a real url
-        if (call.substring(0, 7).equals("http://")) {
+        if (call.length() > 7 && call.substring(0, 7).equals("http://")) {
             url = call;
         } else {
             // Encode uri data
