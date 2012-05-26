@@ -6,30 +6,22 @@
 
 package nz.net.io.jarvis;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Stack;
 
 
 /**
@@ -37,26 +29,24 @@ import java.util.Stack;
  * user interface, and all API communication and parsing is handled in
  * {@link ExtendedWikiHelper}.
  */
-public class GraphicalActivity extends Activity {
-    private static final String TAG = "GraphicalActivity";
-
+public class GraphicalActivity extends BaseActivity {
     /**
      * History stack of previous words browsed in this session. This is
      * referenced when the user taps the "back" key, to possibly intercept and
      * show the last-visited entry, instead of closing the activity.
      */
-    private Stack<String> mHistory = new Stack<String>();
+//    private Stack<String> mHistory = new Stack<String>();
 
-    private String mEntryTitle;
+//    private String mEntryTitle;
 
     /**
      * Keep track of last time user tapped "back" hard key. When pressed more
      * than once within {@link #BACK_THRESHOLD}, we treat let the back key fall
      * through and close the app.
      */
-    private long mLastPress = -1;
+//    private long mLastPress = -1;
 
-    private static final long BACK_THRESHOLD = DateUtils.SECOND_IN_MILLIS / 2;
+//    private static final long BACK_THRESHOLD = DateUtils.SECOND_IN_MILLIS / 2;
 
     /**
      * {@inheritDoc}
@@ -73,8 +63,16 @@ public class GraphicalActivity extends Activity {
         // Prepare User-Agent string for wiki actions
         ExtendedWikiHelper.prepareUserAgent(this);
 
-        // Handle incoming intents as possible searches or links
-        //onNewIntent(getIntent());
+        mWebView = (WebView) findViewById(R.id.webview);
+
+        // Make the view transparent to show background
+        mWebView.setBackgroundColor(0);
+
+        // Assign webview client to webview
+        JarvisWebViewClient webviewclient = new JarvisWebViewClient();
+        webviewclient.setActivity(this);
+        mWebView.setWebViewClient(webviewclient);
+        startNavigating("server connect", true);
     }
 
     /**
@@ -168,6 +166,32 @@ public class GraphicalActivity extends Activity {
         builder.show();
     }
 
+    /**
+     * Because we're singleTop, we handle our own new intents. These usually
+     * come from the {@link SearchManager} when a search is requested, or from
+     * internal links the user clicks on.
+     */
+    @Override
+    public void onNewIntent(Intent intent) {
+        final String action = intent.getAction();
+        if (Intent.ACTION_SEARCH.equals(action)) {
+            // Start query for incoming search request
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            openLookup(query);
+        }
+    }
+
+    private void openLookup(String query) {
+        Intent i = new Intent(
+                GraphicalActivity.this,
+                LookupActivity.class
+        );
+        i.setAction(Intent.ACTION_SEARCH);
+        i.putExtra(SearchManager.QUERY, query);
+
+        startActivity(i);
+    }
+
     public class MenuAdapter extends BaseAdapter {
         private Context mContext;
 
@@ -204,16 +228,8 @@ public class GraphicalActivity extends Activity {
                 public void onClick(View v) {
                     Button b = (Button)v;
                     String buttonText = b.getText().toString();
+                    openLookup(buttonText+" help");
 
-                    // Open LookupActivity with functions help page
-                    Intent i = new Intent(
-                            GraphicalActivity.this,
-                            LookupActivity.class
-                    );
-                    i.setAction(Intent.ACTION_SEARCH);
-                    i.putExtra(SearchManager.QUERY, buttonText+" help");
-
-                    startActivity(i);
                 }
             });
 
