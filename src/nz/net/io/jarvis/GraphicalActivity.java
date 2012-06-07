@@ -61,7 +61,7 @@ public class GraphicalActivity extends BaseActivity {
         gridview.setAdapter(new MenuAdapter(this));
 
         // Prepare User-Agent string for wiki actions
-        ExtendedWikiHelper.prepareUserAgent(this);
+        SimpleWikiHelper.prepareUserAgent(this);
 
         mWebView = (WebView) findViewById(R.id.webview);
 

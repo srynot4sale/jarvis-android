@@ -188,10 +188,10 @@ abstract class BaseActivity extends Activity implements AnimationListener {
         }
 
         mWebView.loadDataWithBaseURL(
-                "http://example.com/",
+                SimpleWikiHelper.API_ROOT+"/",
                 html,
-                ExtendedWikiHelper.MIME_TYPE,
-                ExtendedWikiHelper.ENCODING,
+                SimpleWikiHelper.MIME_TYPE,
+                SimpleWikiHelper.ENCODING,
                 null
         );
     }
@@ -248,7 +248,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
 
                 // Push our requested word to the title bar
                 publishProgress(call);
-                result = ExtendedWikiHelper.getPageContent(call);
+                result = SimpleWikiHelper.getPageContent(call);
             } catch (ApiException e) {
                 Log.e(TAG, "Problem making wiktionary request", e);
             } catch (ParseException e) {

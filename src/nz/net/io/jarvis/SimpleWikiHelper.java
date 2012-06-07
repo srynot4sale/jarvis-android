@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 /**
  * Helper methods to simplify talking with and parsing responses from a
- * lightweight Wiktionary API. Before making any requests, you should call
+ * lightweight API. Before making any requests, you should call
  * {@link #prepareUserAgent(Context)} to generate a User-Agent string based on
  * your application package name and version.
  */
@@ -51,7 +51,7 @@ public class SimpleWikiHelper {
      * Jarvis URL. Use {@link String#format(String, Object...)} to insert
      * REST data into URI.
      */
-    private static final String API_ROOT = "http://example.com/%s/%s/%s";
+    public static final String API_ROOT = "http://example.com";
 
     /**
      * {@link StatusLine} HTTP status code when no server error has occurred.
@@ -69,6 +69,16 @@ public class SimpleWikiHelper {
      * {@link #prepareUserAgent(Context)} before making any other calls.
      */
     private static String sUserAgent = null;
+
+    /**
+     * Mime-type to use when showing parsed results in a {@link WebView}.
+     */
+    public static final String MIME_TYPE = "text/html";
+
+    /**
+     * Encoding to use when showing parsed results in a {@link WebView}.
+     */
+    public static final String ENCODING = "utf-8";
 
     /**
      * Thrown when there were problems contacting the remote API server, either
@@ -144,7 +154,7 @@ public class SimpleWikiHelper {
             if (parts.length > 2) {
                 data = Uri.encode(parts[2]);
             }
-            url = String.format(API_ROOT, function, action, data);
+            url = String.format("%s/%s/%s/%s", API_ROOT, function, action, data);
         }
 
         // Query the API for content

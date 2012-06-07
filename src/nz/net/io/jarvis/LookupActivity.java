@@ -64,7 +64,7 @@ public class LookupActivity extends BaseActivity {
         mWebView.setWebViewClient(webviewclient);
 
         // Prepare User-Agent string for wiki actions
-        ExtendedWikiHelper.prepareUserAgent(this);
+        SimpleWikiHelper.prepareUserAgent(this);
 
         // Handle incoming intents as possible searches or links
         onNewIntent(getIntent());
@@ -128,7 +128,7 @@ public class LookupActivity extends BaseActivity {
         } else if (Intent.ACTION_VIEW.equals(action)) {
             // Treat as internal link only if valid Uri and host matches
             Uri data = intent.getData();
-            if (data != null && ExtendedWikiHelper.WIKI_LOOKUP_HOST
+            if (data != null && SimpleWikiHelper.API_ROOT
                     .equals(data.getHost())) {
                 String query = data.getPathSegments().get(0);
                 startNavigating(query, true);
