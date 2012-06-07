@@ -140,7 +140,13 @@ abstract class BaseActivity extends Activity implements AnimationListener {
     protected void setEntryContent(String entryContent) {
 
         // Convert content to HTML
-        String html = "";
+        String html = "<style>";
+        html += "div#body { margin-left: 2px; padding: 3px; font-size: 17px; color: #fff; background:rgba(0, 0, 0, 0.5); }";
+        html += "h3, p, ul { display: block; padding: 1px 10px; }";
+        html += "ul { padding-left: 30px; }";
+        html += "a { color: #fff; }";
+        html += "</style>";
+        html += "<div id=\"body\">";
 
         JSONObject json;
         String message = "";
@@ -183,9 +189,11 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                 html = html + "<br>Unparseable:<br>" + entryContent;
             }
         } else {
-            html  = "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>';";
+            html += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>';";
             html += "<p>Server unavailable [<a href=\"server/connect\">retry</a>]</p>";
         }
+
+        html += "</div>";
 
         mWebView.loadDataWithBaseURL(
                 SimpleWikiHelper.API_ROOT+"/",
