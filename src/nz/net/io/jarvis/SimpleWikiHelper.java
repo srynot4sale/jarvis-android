@@ -181,6 +181,7 @@ public class SimpleWikiHelper {
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(url);
         request.setHeader("User-Agent", sUserAgent);
+        request.setHeader("secret", "secrethash");
 
         try {
             HttpResponse response = client.execute(request);
