@@ -54,6 +54,11 @@ public class SimpleWikiHelper {
     public static final String API_ROOT = "http://example.com";
 
     /**
+     * Jarvis secret authentication
+     */
+    public static final String API_SECRET = "secrethash";
+
+    /**
      * {@link StatusLine} HTTP status code when no server error has occurred.
      */
     private static final int HTTP_STATUS_OK = 200;
@@ -181,7 +186,7 @@ public class SimpleWikiHelper {
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(url);
         request.setHeader("User-Agent", sUserAgent);
-        request.setHeader("secret", "secrethash");
+        request.setHeader("secret", API_SECRET);
 
         try {
             HttpResponse response = client.execute(request);
