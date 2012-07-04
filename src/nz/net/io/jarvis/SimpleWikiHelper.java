@@ -128,6 +128,46 @@ public class SimpleWikiHelper {
     }
 
     /**
+     * Create a URL from an API call
+     */
+    public static String getPageURL(String call) {
+
+        String url = "";
+        String function = "";
+        String action = "";
+        String data = "";
+        Boolean isInternal = true;
+
+        // Check if this is a real url
+        if (call.length() >= 4 && call.substring(0, 4).equals("http")) {
+            Integer length = API_ROOT.length();
+            if (call.substring(0, length).equals(API_ROOT)) {
+                call = call.substring(length+1);
+                call = call.replace("/", " ");
+            } else {
+                url = call;
+                isInternal = false;
+            }
+        }
+
+        if (isInternal) {
+            // Encode uri data
+            Pattern pattern = Pattern.compile(" ");
+            String[] parts = pattern.split(call, 3);
+            function = Uri.encode(parts[0]);
+            if (parts.length > 1) {
+                action = Uri.encode(parts[1]);
+            }
+            if (parts.length > 2) {
+                data = Uri.encode(parts[2]);
+            }
+            url = String.format("/%s/%s/%s", function, action, data);
+        }
+
+        return url;
+    }
+
+    /**
      * Read and return the content for a specific API call.
      * Because this call blocks until results are available, it should not be
      * run from a UI thread.
@@ -140,29 +180,13 @@ public class SimpleWikiHelper {
     public static String getPageContent(String call)
             throws ApiException, ParseException {
 
-        String url = "";
-        String function = "";
-        String action = "";
-        String data = "";
+        String url = getPageURL(call);
 
-        // Check if this is a real url
-        if (call.length() > 7 && call.substring(0, 7).equals("http://")) {
-            url = call;
-        } else {
-            // Encode uri data
-            Pattern pattern = Pattern.compile(" ");
-            String[] parts = pattern.split(call, 3);
-            function = Uri.encode(parts[0]);
-            if (parts.length > 1) {
-                action = Uri.encode(parts[1]);
-            }
-            if (parts.length > 2) {
-                data = Uri.encode(parts[2]);
-            }
-            url = String.format("%s/%s/%s/%s", API_ROOT, function, action, data);
+        if (url.length() >= 1 && url.substring(0, 1).equals("/")) {
+            url = String.format("%s/%s", API_ROOT, url);
         }
 
-        // Query the API for content
+        // Get content
         String content = getUrlContent(url);
 
         return content;
@@ -216,5 +240,4 @@ public class SimpleWikiHelper {
             throw new ApiException("Problem communicating with API", e);
         }
     }
-
 }
