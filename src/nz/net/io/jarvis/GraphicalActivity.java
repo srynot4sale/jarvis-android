@@ -239,9 +239,7 @@ public class GraphicalActivity extends BaseActivity {
         // references to our images
         private String[] mFunctions = {
                 "server",
-                "list",
-                "calendar",
-                "habit"
+                "list"
         };
     }
 }
