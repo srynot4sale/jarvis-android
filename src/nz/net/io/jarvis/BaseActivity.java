@@ -189,7 +189,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                 html = html + "<br>Unparseable:<br>" + entryContent;
             }
         } else {
-            html += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>';";
+            html += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>";
             html += "<p>Server unavailable [<a href=\"server/connect\">retry</a>]</p>";
         }
 
