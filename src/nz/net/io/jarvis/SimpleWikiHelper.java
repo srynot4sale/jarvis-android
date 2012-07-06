@@ -22,9 +22,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -90,7 +87,9 @@ public class SimpleWikiHelper {
      * because of a network error, or the server returned a bad status code.
      */
     public static class ApiException extends Exception {
-        public ApiException(String detailMessage, Throwable throwable) {
+		private static final long serialVersionUID = 2601373447800779519L;
+
+		public ApiException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
 
@@ -104,7 +103,10 @@ public class SimpleWikiHelper {
      * either because the response was empty, or it was malformed.
      */
     public static class ParseException extends Exception {
-        public ParseException(String detailMessage, Throwable throwable) {
+
+		private static final long serialVersionUID = -4358358446067693080L;
+
+		public ParseException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
     }
