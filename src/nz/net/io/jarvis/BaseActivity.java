@@ -171,8 +171,24 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                             html = html + "<ul>";
 
                             Integer i = 0;
+                            Integer j = 0;
                             while (i < data.length()) {
-                                html = html + String.format("<li>%s</li>", data.getString(i));
+                                JSONArray item = data.optJSONArray(i);
+                                if (item != null)
+                                {
+                                    j = 0;
+                                    html = html + "<li>";
+                                    while (j < item.length()) {
+                                        if (j > 0) {
+                                            html = html + "|";
+                                        }
+                                        html = html + item.getString(j);
+                                        j++;
+                                    }
+                                    html = html + "</li>";
+                                } else {
+                                    html = html + String.format("<li>%s</li>", data.getString(i));
+                                }
                                 i++;
                             }
 
