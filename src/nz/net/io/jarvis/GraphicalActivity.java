@@ -6,22 +6,17 @@
 
 package nz.net.io.jarvis;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.TextView;
 
 
 /**
@@ -115,55 +110,6 @@ public class GraphicalActivity extends BaseActivity {
         }
 
         return super.dispatchKeyEvent(event);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.lookup, menu);
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.lookup_apicall: {
-                onSearchRequested();
-                return true;
-            }
-            case R.id.lookup_about: {
-                showAbout();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Show an about dialog that cites data sources.
-     */
-    protected void showAbout() {
-        // Inflate the about message contents
-        View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
-
-        // When linking text, force to always use default color. This works
-        // around a pressed color state bug.
-        TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
-        int defaultColor = textView.getTextColors().getDefaultColor();
-        textView.setTextColor(defaultColor);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setIcon(R.drawable.app_icon);
-        builder.setTitle(R.string.app_name);
-        builder.setView(messageView);
-        builder.create();
-        builder.show();
     }
 
     /**

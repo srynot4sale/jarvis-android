@@ -51,5 +51,6 @@
     <string name="lookup_about">About</string>
 
     <string name="empty_result">No entry found for this word, or problem reading data.</string>
+    <string name="lookup_help">Help</string>
 
 </resources>

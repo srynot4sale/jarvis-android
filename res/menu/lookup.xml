@@ -26,4 +26,10 @@
         android:title="@string/lookup_about"
         android:icon="@android:drawable/ic_menu_help" />
 
+    <item
+        android:id="@+id/lookup_help"
+        android:title="@string/lookup_help"
+        android:icon="@android:drawable/ic_menu_help" />
+
+
 </menu>

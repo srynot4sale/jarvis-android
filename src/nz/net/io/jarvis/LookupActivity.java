@@ -21,10 +21,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 
 /**
  * Activity that lets users browse through Wiktionary content. This is just the
@@ -138,5 +140,37 @@ public class LookupActivity extends BaseActivity {
             // If not recognized, then start showing random word
             startNavigating(null, true);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.lookup_apicall: {
+                onSearchRequested();
+                return true;
+            }
+            case R.id.lookup_help: {
+                openHelp();
+                return true;
+            }
+            case R.id.lookup_about: {
+                showAbout();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void openHelp() {
+        String func;
+        if (function.length() > 0) {
+            func = function;
+        } else {
+            func = "server";
+        }
+        startNavigating(func+" help", true);
     }
 }

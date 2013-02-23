@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +38,10 @@ abstract class BaseActivity extends Activity implements AnimationListener {
 
     protected Animation mSlideIn;
     protected Animation mSlideOut;
+
+    protected String function;
+    protected String action;
+    protected String data;
 
     /**
      * History stack of previous words browsed in this session. This is
@@ -131,6 +136,16 @@ abstract class BaseActivity extends Activity implements AnimationListener {
             mEntryTitle = entryText;
             mTitle.setText(mEntryTitle);
         }
+
+        Pattern pattern = Pattern.compile("/");
+        String[] parts = pattern.split(entryText, 4);
+        function = parts[1];
+        action = parts[2];
+        if (parts.length > 3) {
+            data = parts[3];
+        } else {
+            data = "";
+        }
     }
 
     /**
@@ -144,6 +159,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
         html += "div#body { margin-left: 2px; padding: 3px; font-size: 17px; color: #fff; background:rgba(0, 0, 0, 0.5); }";
         html += "h3, p, ul { display: block; padding: 1px 10px; }";
         html += "ul { padding-left: 30px; }";
+        html += "li { padding-bottom: 5px; }";
         html += "a { color: #fff; }";
         html += "</style>";
         html += "<div id=\"body\">";
@@ -180,7 +196,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                                     html = html + "<li>";
                                     while (j < item.length()) {
                                         if (j > 0) {
-                                            html = html + "|";
+                                            html = html + " | ";
                                         }
                                         html = html + item.getString(j);
                                         j++;
