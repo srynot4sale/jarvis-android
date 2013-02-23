@@ -228,7 +228,7 @@ public class GraphicalActivity extends BaseActivity {
                 public void onClick(View v) {
                     Button b = (Button)v;
                     String buttonText = b.getText().toString();
-                    openLookup(buttonText+" help");
+                    openLookup(buttonText+" default");
 
                 }
             });
