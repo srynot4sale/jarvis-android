@@ -48,12 +48,12 @@ public class SimpleWikiHelper {
      * Jarvis URL. Use {@link String#format(String, Object...)} to insert
      * REST data into URI.
      */
-    public static final String API_ROOT = "http://example.com";
+    public static final String API_ROOT = "https://127.0.0.1";
 
     /**
      * Jarvis secret authentication
      */
-    public static final String API_SECRET = "secrethash";
+    public static final String API_SECRET = "supersecret";
 
     /**
      * {@link StatusLine} HTTP status code when no server error has occurred.
@@ -87,9 +87,9 @@ public class SimpleWikiHelper {
      * because of a network error, or the server returned a bad status code.
      */
     public static class ApiException extends Exception {
-		private static final long serialVersionUID = 2601373447800779519L;
+        private static final long serialVersionUID = 2601373447800779519L;
 
-		public ApiException(String detailMessage, Throwable throwable) {
+        public ApiException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
 
@@ -104,9 +104,9 @@ public class SimpleWikiHelper {
      */
     public static class ParseException extends Exception {
 
-		private static final long serialVersionUID = -4358358446067693080L;
+        private static final long serialVersionUID = -4358358446067693080L;
 
-		public ParseException(String detailMessage, Throwable throwable) {
+        public ParseException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
     }
@@ -133,7 +133,7 @@ public class SimpleWikiHelper {
      * Create a URL from an API call
      */
     public static String getPageURL(String call) {
-
+        Log.i("Jarvis", String.format("Call: %s", call));
         String url = "";
         String function = "";
         String action = "";
@@ -166,6 +166,8 @@ public class SimpleWikiHelper {
             url = String.format("/%s/%s/%s", function, action, data);
         }
 
+        Log.i("Jarvis", String.format("URL: %s", url));
+
         return url;
     }
 
@@ -185,7 +187,7 @@ public class SimpleWikiHelper {
         String url = getPageURL(call);
 
         if (url.length() >= 1 && url.substring(0, 1).equals("/")) {
-            url = String.format("%s/%s", API_ROOT, url);
+            url = String.format("%s%s", API_ROOT, url);
         }
 
         // Get content

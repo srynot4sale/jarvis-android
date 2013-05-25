@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2009 The Android Open Source Project
+<!--
+     Copyright (C) 2009 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,40 +18,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="#050505"
+    android:orientation="vertical"
+    android:textColor="#06D5C3" >
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#050505"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:textColor="#06D5C3"
+        android:verticalSpacing="10dp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:visibility="gone" >
 
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="18dip"
             android:layout_height="18dip"
             android:layout_marginLeft="10dip"
-            android:visibility="invisible"
-            android:indeterminateOnly="true"
-            android:indeterminateDrawable="@drawable/progress_spin"
+            android:background="#050505"
             android:indeterminateBehavior="repeat"
-            android:indeterminateDuration="3500" />
+            android:indeterminateDrawable="@drawable/progress_spin"
+            android:indeterminateDuration="3500"
+            android:indeterminateOnly="true"
+            android:paddingRight="10dip"
+            android:textColor="#06D5C3" />
 
         <TextView
             android:id="@+id/title"
+            style="@style/LookupTitle"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="10dip"
-            style="@style/LookupTitle" />
-
+            android:background="#050505"
+            android:paddingBottom="10dip"
+            android:paddingLeft="0dip"
+            android:paddingRight="10dip"
+            android:paddingTop="10dip"
+            android:textColor="#06D5C3" />
     </LinearLayout>
 
-    <WebView
-        android:id="@+id/webview"
+    <TextView
+        android:id="@+id/messageview"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:background="#06D5C3"
+        android:padding="10dip"
+        android:textColor="#050505" />
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#050505"
+        android:cacheColorHint="@android:color/transparent"
+        android:padding="10dip"
+        android:textColor="#06D5C3" />
 
 </LinearLayout>

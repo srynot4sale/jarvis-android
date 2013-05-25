@@ -5,9 +5,18 @@ import nz.net.io.jarvis.SimpleWikiHelper.ParseException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +24,11 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,10 +45,12 @@ import org.json.JSONObject;
  */
 abstract class BaseActivity extends Activity implements AnimationListener {
 
+    protected GridView mGridView;
     protected View mTitleBar;
     protected TextView mTitle;
     protected ProgressBar mProgress;
-    protected WebView mWebView;
+    protected ListView mListView;
+    protected TextView mMessageView;
 
     protected Animation mSlideIn;
     protected Animation mSlideOut;
@@ -43,23 +59,29 @@ abstract class BaseActivity extends Activity implements AnimationListener {
     protected String action;
     protected String data;
 
+    protected Spanned[] dataArray;
+    protected String[] urlArray;
+    protected JSONObject[] actionArray;
+
+    public static final int ADD_ID = 0x09;
+
     /**
      * History stack of previous words browsed in this session. This is
      * referenced when the user taps the "back" key, to possibly intercept and
      * show the last-visited entry, instead of closing the activity.
      */
-    private Stack<String> mHistory = new Stack<String>();
+    protected Stack<String> mHistory = new Stack<String>();
 
-    private String mEntryTitle;
+    protected String mEntryTitle;
 
     /**
      * Keep track of last time user tapped "back" hard key. When pressed more
      * than once within {@link #BACK_THRESHOLD}, we treat let the back key fall
      * through and close the app.
      */
-//    private long mLastPress = -1;
+    protected long mLastPress = -1;
 
-//    private static final long BACK_THRESHOLD = DateUtils.SECOND_IN_MILLIS / 2;
+    protected static final long BACK_THRESHOLD = DateUtils.SECOND_IN_MILLIS / 2;
 
     /**
      * Start navigating to the given word, pushing any current word onto the
@@ -70,9 +92,18 @@ abstract class BaseActivity extends Activity implements AnimationListener {
      * @param pushHistory If true, push the current word onto history stack.
      */
     void startNavigating(String word, boolean pushHistory) {
-        // Push any current word onto the history stack
-        if (!TextUtils.isEmpty(mEntryTitle) && pushHistory) {
-            mHistory.add(mEntryTitle);
+        Log.i("Jarvis", String.format("Start navigating: %s", word));
+
+        if (word == "server connect" || word == null) {
+            mGridView.setVisibility(View.VISIBLE);
+            mTitleBar.setVisibility(View.GONE);
+            mTitle.setVisibility(View.GONE);
+            mProgress.setVisibility(View.GONE);
+        } else {
+            mGridView.setVisibility(View.GONE);
+            mTitleBar.setVisibility(View.VISIBLE);
+            mTitle.setVisibility(View.VISIBLE);
+            mProgress.setVisibility(View.VISIBLE);
         }
 
         // Start lookup for new word in background
@@ -90,39 +121,27 @@ abstract class BaseActivity extends Activity implements AnimationListener {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.lookup_apicall: {
-                onSearchRequested();
-                return true;
-            }
-            case R.id.lookup_about: {
-                showAbout();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Show an about dialog that cites data sources.
      */
     protected void showAbout() {
         // Inflate the about message contents
         View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
 
-        // When linking text, force to always use default color. This works
-        // around a pressed color state bug.
-        TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
-        int defaultColor = textView.getTextColors().getDefaultColor();
-        textView.setTextColor(defaultColor);
+        TextView textView = (TextView) messageView.findViewById(R.id.about_description);
+        textView.setText(Html.fromHtml(this.getString(R.string.app_descrip)));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        Context context = getApplicationContext();
+        String versionName;
+        try {
+            versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0 ).versionName;
+        } catch (NameNotFoundException e) {
+            versionName = "unknown";
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.drawable.app_icon);
-        builder.setTitle(R.string.app_name);
+        builder.setTitle(String.format("%s v%s", this.getString(R.string.app_name), versionName));
         builder.setView(messageView);
         builder.create();
         builder.show();
@@ -136,16 +155,6 @@ abstract class BaseActivity extends Activity implements AnimationListener {
             mEntryTitle = entryText;
             mTitle.setText(mEntryTitle);
         }
-
-        Pattern pattern = Pattern.compile("/");
-        String[] parts = pattern.split(entryText, 4);
-        function = parts[1];
-        action = parts[2];
-        if (parts.length > 3) {
-            data = parts[3];
-        } else {
-            data = "";
-        }
     }
 
     /**
@@ -154,21 +163,19 @@ abstract class BaseActivity extends Activity implements AnimationListener {
      */
     protected void setEntryContent(String entryContent) {
 
-        // Convert content to HTML
-        String html = "<style>";
-        html += "div#body { margin-left: 2px; padding: 3px; font-size: 17px; color: #fff; background:rgba(0, 0, 0, 0.5); }";
-        html += "h3, p, ul { display: block; padding: 1px 10px; }";
-        html += "ul { padding-left: 30px; }";
-        html += "li { padding-bottom: 5px; }";
-        html += "a { color: #fff; }";
-        html += "</style>";
-        html += "<div id=\"body\">";
+        dataArray = null;
+        urlArray = null;
+        actionArray = null;
 
         JSONObject json;
         String message = "";
+        Integer write = 0;
 
         // Check we got some form of content
         if (entryContent != null) {
+
+            Log.d("Jarvis", entryContent);
+
             try {
                 json = new JSONObject(entryContent);
                 // Drill into the JSON response to find the content body
@@ -178,62 +185,112 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                     message = message + String.format(" (STATE: %s)", state);
                 }
 
-                html = html + String.format("<p>%s</p>", message);
+                if (!json.isNull("write")) {
+                    write = json.getInt("write");
+                }
 
                 if (!json.isNull("data")) {
-                    try {
-                        JSONArray data = json.getJSONArray("data");
-                        if (data.length() > 0) {
-                            html = html + "<ul>";
+                    JSONArray data = json.getJSONArray("data");
 
-                            Integer i = 0;
-                            Integer j = 0;
-                            while (i < data.length()) {
-                                JSONArray item = data.optJSONArray(i);
-                                if (item != null)
-                                {
-                                    j = 0;
-                                    html = html + "<li>";
-                                    while (j < item.length()) {
-                                        if (j > 0) {
-                                            html = html + " | ";
-                                        }
-                                        html = html + item.getString(j);
-                                        j++;
-                                    }
-                                    html = html + "</li>";
-                                } else {
-                                    html = html + String.format("<li>%s</li>", data.getString(i));
+                    // Setup dataArray
+                    dataArray = new Spanned[data.length()];
+                    urlArray = new String[data.length()];
+                    actionArray = new JSONObject[data.length()];
+
+                    if (data.length() > 0) {
+                        Integer i = 0;
+                        while (i < data.length()) {
+                            JSONArray item = data.optJSONArray(i);
+                            if (item != null)
+                            {
+                                dataArray[i] = android.text.Html.fromHtml(item.getString(0));
+                                if (item.length() > 1) {
+                                    urlArray[i]  = item.getString(1);
                                 }
-                                i++;
+                                if (item.length() > 2) {
+                                    JSONObject actions = item.optJSONObject(2);
+                                    if (actions != null) {
+                                        actionArray[i] = actions;
+                                    }
+                                }
                             }
 
-                            html = html + "</ul>";
+                            i++;
                         }
-                    } catch (JSONException e) {
-                        String data = json.getString("data");
-                        html = html + String.format("<ul><li>%s</li></ul>", data);
                     }
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
-                html = html + "<br>Unparseable:<br>" + entryContent;
+                Log.e("Jarvis", "Errors: "+e);
+                message = "<br>Unparseable:<br>" + entryContent;
             }
         } else {
-            html += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>";
-            html += "<p>Server unavailable [<a href=\"server/connect\">retry</a>]</p>";
+            message += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>";
+            message += "<p>Server unavailable</p>";
         }
 
-        html += "</div>";
+        // Push any current url onto the history stack if it's not a write action
+        if (write == 0 && !TextUtils.isEmpty(mEntryTitle)) {
+            // Also check to make sure we are not adding two duplicate entries in a row
+            if (mHistory.size() == 0 || !mHistory.lastElement().equals(mEntryTitle)) {
+                mHistory.add(mEntryTitle);
+            }
+        }
 
-        mWebView.loadDataWithBaseURL(
-                SimpleWikiHelper.API_ROOT+"/",
-                html,
-                SimpleWikiHelper.MIME_TYPE,
-                SimpleWikiHelper.ENCODING,
-                null
-        );
+        mMessageView.setText(android.text.Html.fromHtml(message));
+        Linkify.addLinks(mMessageView, Linkify.ALL);
+
+        if (dataArray == null || dataArray.length == 0) {
+            Log.v("Jarvis", "No data items");
+            mListView.setVisibility(View.GONE);
+            return;
+        }
+
+        mListView.setVisibility(View.VISIBLE);
+
+        ArrayAdapter<Spanned> adapter = new ArrayAdapter<Spanned>(this,
+                R.layout.list_item, dataArray);
+
+        mListView.setAdapter(adapter);
+
+        // Create a message handling object as an anonymous class.
+        OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+                String URL = urlArray[position];
+                if (URL == "null" || URL == null) {
+                    return;
+                }
+
+                // Do something in response to the click
+                startNavigating(URL, true);
+            }
+        };
+
+        mListView.setOnItemClickListener(mMessageClickedHandler);
+        registerForContextMenu(mListView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.listview) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+            if (actionArray != null && actionArray.length > info.position && actionArray[info.position] != null) {
+                menu.setHeaderTitle(dataArray[info.position]);
+                for (int i = 0; i < actionArray[info.position].names().length(); i++) {
+                    menu.add(Menu.NONE, i, i, actionArray[info.position].names().optString(i));
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int menuItemIndex = item.getItemId();
+        String listItemValue = actionArray[info.position].optString(actionArray[info.position].names().optString(menuItemIndex));
+        startNavigating(listItemValue, true);
+        return true;
     }
 
     /**
@@ -281,9 +338,20 @@ abstract class BaseActivity extends Activity implements AnimationListener {
             String result = null;
 
             try {
-                // If function is null, attempt to connect to server
                 if (call == null) {
                     call = "server connect";
+                }
+
+                // Set function/action
+                String[] split = call.split(" ", 2);
+                if (split.length > 0) {
+                    function = split[0];
+                }
+                if (split.length > 1) {
+                    action = split[1];
+                }
+                if (split.length > 2) {
+                    data = split[2];
                 }
 
                 // Push our requested word to the title bar
@@ -304,7 +372,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
         @Override
         protected void onProgressUpdate(String... args) {
             String call = args[0];
-            setEntryTitle(SimpleWikiHelper.getPageURL(call));
+            setEntryTitle(call);
         }
 
         /**

@@ -16,14 +16,27 @@
 
 package nz.net.io.jarvis;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.text.Editable;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -44,6 +57,9 @@ public class LookupActivity extends BaseActivity {
 
         setContentView(R.layout.lookup);
 
+        mGridView = (GridView) findViewById(R.id.gridview);
+        mGridView.setAdapter(new MenuAdapter(this));
+
         // Load animations used to show/hide progress bar
         mSlideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in);
         mSlideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out);
@@ -55,15 +71,8 @@ public class LookupActivity extends BaseActivity {
         mTitleBar = findViewById(R.id.title_bar);
         mTitle = (TextView) findViewById(R.id.title);
         mProgress = (ProgressBar) findViewById(R.id.progress);
-        mWebView = (WebView) findViewById(R.id.webview);
-
-        // Make the view transparent to show background
-        mWebView.setBackgroundColor(0);
-
-        // Assign webview client to webview
-        JarvisWebViewClient webviewclient = new JarvisWebViewClient();
-        webviewclient.setActivity(this);
-        mWebView.setWebViewClient(webviewclient);
+        mMessageView = (TextView) findViewById(R.id.messageview);
+        mListView = (ListView) findViewById(R.id.listview);
 
         // Prepare User-Agent string for wiki actions
         SimpleWikiHelper.prepareUserAgent(this);
@@ -80,7 +89,7 @@ public class LookupActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Handle back key as long we have a history stack
-/*        if (keyCode == KeyEvent.KEYCODE_BACK && !mHistory.empty()) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && mHistory.size() >= 2) {
 
             // Compare against last pressed time, and if user hit multiple times
             // in quick succession, we should consider bailing out early.
@@ -90,13 +99,14 @@ public class LookupActivity extends BaseActivity {
             }
             mLastPress = currentPress;
 
-            // Pop last entry off stack and start loading
+            // Pop off current entry
+            mHistory.pop();
+            // Get last entry
             String lastEntry = mHistory.pop();
             startNavigating(lastEntry, false);
 
             return true;
         }
-*/
 
         // Otherwise fall through to parent
         return super.onKeyDown(keyCode, event);
@@ -142,35 +152,143 @@ public class LookupActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mEntryTitle != null && mEntryTitle.length() > 9 && mEntryTitle.substring(0, 9).equals("list view")) {
+            // try to see if already exists
+            MenuItem editItem = menu.findItem(ADD_ID);
+            if (editItem == null) {
+                menu.add(
+                        0,
+                        ADD_ID,
+                        0,
+                        "Add"
+                        )
+                        .setIcon(android.R.drawable.ic_menu_add);
+            }
+        } else {
+            // we need to remove it when the condition fails
+            menu.removeItem(ADD_ID);
+        }
+
+        return true;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.lookup_apicall: {
-                onSearchRequested();
-                return true;
-            }
-            case R.id.lookup_help: {
-                openHelp();
-                return true;
-            }
-            case R.id.lookup_about: {
-                showAbout();
-                return true;
-            }
+        case R.id.lookup_apicall:
+            openAPI("");
+            //onSearchRequested();
+            return true;
+        case R.id.lookup_help:
+            openHelp();
+            return true;
+        case R.id.lookup_about:
+            showAbout();
+            return true;
+        case ADD_ID:
+            openAPI("list add " + mEntryTitle.substring(10) + " ");
+            return true;
         }
         return false;
     }
 
+    public void openAPI(String defaultText) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("API Call");
+        //alert.setMessage("Message");
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        input.setText(defaultText);
+        input.setSelection(input.getText().length());
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String value = input.getText().toString();
+                startNavigating(value, false);
+            }
+        });
+
+        alert.show();
+    }
+
+
     public void openHelp() {
         String func;
-        if (function.length() > 0) {
+        if (function != null && function.length() > 0) {
             func = function;
         } else {
             func = "server";
         }
-        startNavigating(func+" help", true);
+        startNavigating(func + " help", true);
+    }
+
+    private void openLookup(String query) {
+        Intent i = new Intent(
+                LookupActivity.this,
+                LookupActivity.class
+                );
+        i.setAction(Intent.ACTION_SEARCH);
+        i.putExtra(SearchManager.QUERY, query);
+
+        startActivity(i);
+    }
+
+    public class MenuAdapter extends BaseAdapter {
+        private Context mContext;
+
+        public MenuAdapter(Context c) {
+            mContext = c;
+        }
+
+        public int getCount() {
+            return mFunctions.length;
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Button buttonView;
+            if (convertView == null) {  // if it's not recycled, initialize some attributes
+                buttonView = new Button(mContext);
+                //buttonView.setLayoutParams(new GridView.LayoutParams(85, 85));
+                //buttonView.setPadding(8, 8, 8, 8);
+            } else {
+                buttonView = (Button) convertView;
+            }
+
+            buttonView.setText(mFunctions[position]);
+
+            buttonView.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+                    Button b = (Button)v;
+                    String buttonText = b.getText().toString();
+                    openLookup(buttonText+" default");
+
+                }
+            });
+
+            return buttonView;
+        }
+
+        // references to our images
+        private String[] mFunctions = {
+                "server",
+                "list"
+        };
     }
 }
