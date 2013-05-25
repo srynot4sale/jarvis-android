@@ -20,6 +20,12 @@
     android:versionCode="2"
     android:versionName="2.0.4" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <uses-sdk
+        android:minSdkVersion="3"
+        android:targetSdkVersion="4" />
+
     <application
         android:description="@string/app_descrip"
         android:icon="@drawable/app_icon"
@@ -86,11 +92,5 @@
     <meta-data
         android:name="android.app.default_searchable"
         android:value=".LookupActivity" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-sdk
-        android:minSdkVersion="3"
-        android:targetSdkVersion="4" />
 
 </manifest>
