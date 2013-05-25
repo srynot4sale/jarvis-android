@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="pref_serverurl"
+        android:title="@string/pref_serverurl"
+        android:summary="@string/pref_serverurl_summary"
+        android:defaultValue="@string/pref_serverurl_default" />
+    <EditTextPreference
+        android:key="pref_serversecret"
+        android:title="@string/pref_serversecret"
+        android:summary="@string/pref_serversecret_summary"
+        android:defaultValue="@string/pref_serversecret_default" />
+    <EditTextPreference
+        android:key="pref_apkurl"
+        android:title="@string/pref_apkurl"
+        android:summary="@string/pref_apkurl_summary"
+        android:defaultValue="@string/pref_apkurl_default" />
+</PreferenceScreen>

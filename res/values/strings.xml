@@ -18,7 +18,7 @@
 <resources>
 
     <string name="app_name">Jarvis</string>
-    <string name="app_descrip"><![CDATA[Jarvis android client.<br /><a href="urltoupdatefrom/Jarvis.apk">Get</a> update.]]></string>
+    <string name="app_descrip"><![CDATA[Jarvis android client.<br /><a href="$URL">Get</a> update.]]></string>
     <string name="app_credits">Aaron Barnes\n&lt;aaron@io.net.nz&gt;</string>
     <string name="template_user_agent" translatable="false">"%1$s/%2$s (Linux; Android)"</string>
     <string name="template_wotd_title">"Wiktionary:Word of the day/%1$s %2$s"</string>
@@ -51,5 +51,15 @@
     <string name="title_activity_input_dialog">InputDialog</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="pref_apkurl">Upgrade URL</string>
+    <string name="pref_apkurl_summary">URL of APK file for downloading upgrades</string>
+    <string name="pref_apkurl_default">http://example.com/Jarvis.apk</string>
+    <string name="pref_serverurl">Server Location</string>
+    <string name="pref_serverurl_summary">URL to access server (without trailing slash)</string>
+    <string name="pref_serverurl_default">http://127.0.0.1:8080</string>
+    <string name="pref_serversecret">Server Secret</string>
+    <string name="pref_serversecret_summary">Secret passphrase for server</string>
+    <string name="pref_serversecret_default">secret</string>
+    <string name="lookup_preferences">Preferences</string>
 
 </resources>

@@ -21,9 +21,11 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -54,6 +56,13 @@ public class LookupActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        // Load preferences (might need to fix this, will be run each api call this way :()
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SimpleWikiHelper.API_ROOT = sharedPref.getString("pref_serverurl", "");
+        SimpleWikiHelper.API_SECRET = sharedPref.getString("pref_serversecret", "");
 
         setContentView(R.layout.lookup);
 
@@ -192,6 +201,9 @@ public class LookupActivity extends BaseActivity {
             return true;
         case ADD_ID:
             openAPI("list add " + mEntryTitle.substring(10) + " ");
+            return true;
+        case R.id.lookup_preferences:
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return false;

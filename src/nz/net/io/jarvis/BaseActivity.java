@@ -6,8 +6,10 @@ import nz.net.io.jarvis.SimpleWikiHelper.ParseException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -127,8 +129,13 @@ abstract class BaseActivity extends Activity implements AnimationListener {
         // Inflate the about message contents
         View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String apkurl = sharedPref.getString("pref_apkurl", "");
+        String descrip = this.getString(R.string.app_descrip);
+        descrip = descrip.replace("$URL", apkurl);
+
         TextView textView = (TextView) messageView.findViewById(R.id.about_description);
-        textView.setText(Html.fromHtml(this.getString(R.string.app_descrip)));
+        textView.setText(Html.fromHtml(descrip));
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
         Context context = getApplicationContext();

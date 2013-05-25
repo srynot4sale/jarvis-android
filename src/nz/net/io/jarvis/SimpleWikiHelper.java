@@ -28,6 +28,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -48,12 +49,12 @@ public class SimpleWikiHelper {
      * Jarvis URL. Use {@link String#format(String, Object...)} to insert
      * REST data into URI.
      */
-    public static final String API_ROOT = "https://127.0.0.1";
+    public static String API_ROOT = "";
 
     /**
      * Jarvis secret authentication
      */
-    public static final String API_SECRET = "supersecret";
+    public static String API_SECRET = "";
 
     /**
      * {@link StatusLine} HTTP status code when no server error has occurred.
