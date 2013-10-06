@@ -30,7 +30,7 @@
     <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
     
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
 
     <application
@@ -41,11 +41,9 @@
         <activity
             android:name="nz.net.io.jarvis.LookupActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:theme="@style/LookupTheme" >
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -75,7 +73,7 @@
         </activity>
 
         <activity android:name="nz.net.io.jarvis.SettingsActivity"></activity>
-        
+
         <receiver
             android:name=".MyBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >

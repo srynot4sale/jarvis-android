@@ -1,12 +1,15 @@
 package nz.net.io.jarvis;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+
+        getFragmentManager().beginTransaction().replace(android.R.id.content,
+                new SettingsFragment()).commit();
     }
+
 }

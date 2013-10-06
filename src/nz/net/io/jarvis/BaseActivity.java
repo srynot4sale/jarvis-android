@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -35,12 +34,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Stack;
-import java.util.regex.Pattern;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 /**
  * Base Jarvis activity include code for making API lookups
@@ -117,8 +113,8 @@ abstract class BaseActivity extends Activity implements AnimationListener {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.lookup, menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.lookup, menu);
         return true;
     }
 
@@ -208,8 +204,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
                         Integer i = 0;
                         while (i < data.length()) {
                             JSONArray item = data.optJSONArray(i);
-                            if (item != null)
-                            {
+                            if (item != null) {
                                 dataArray[i] = android.text.Html.fromHtml(item.getString(0));
                                 if (item.length() > 1) {
                                     urlArray[i]  = item.getString(1);
@@ -236,7 +231,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
             message += "<p>Server unavailable</p>";
         }
 
-        // Push any current url onto the history stack if it's not a write action
+        // Push any current URL onto the history stack if it's not a write action
         if (write == 0 && !TextUtils.isEmpty(mEntryTitle)) {
             // Also check to make sure we are not adding two duplicate entries in a row
             if (mHistory.size() == 0 || !mHistory.lastElement().equals(mEntryTitle)) {
@@ -363,11 +358,12 @@ abstract class BaseActivity extends Activity implements AnimationListener {
 
                 // Push our requested word to the title bar
                 publishProgress(call);
+
                 result = SimpleWikiHelper.getPageContent(call);
             } catch (ApiException e) {
-                Log.e(TAG, "Problem making wiktionary request", e);
+                Log.e(TAG, "Problem making wiktionary request - API", e);
             } catch (ParseException e) {
-                Log.e(TAG, "Problem making wiktionary request", e);
+                Log.e(TAG, "Problem making wiktionary request - Parse issue", e);
             }
 
             return result;

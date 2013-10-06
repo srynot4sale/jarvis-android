@@ -28,7 +28,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -154,7 +153,7 @@ public class SimpleWikiHelper {
         }
 
         if (isInternal) {
-            // Encode uri data
+            // Encode URI data
             Pattern pattern = Pattern.compile(" ");
             String[] parts = pattern.split(call, 3);
             function = Uri.encode(parts[0]);
@@ -164,7 +163,7 @@ public class SimpleWikiHelper {
             if (parts.length > 2) {
                 data = Uri.encode(parts[2]);
             }
-            url = String.format("/%s/%s/%s", function, action, data);
+            url = String.format("/api/%s/%s/%s", function, action, data);
         }
 
         Log.i("Jarvis", String.format("URL: %s", url));
@@ -193,13 +192,12 @@ public class SimpleWikiHelper {
 
         // Get content
         String content = getUrlContent(url);
-
         return content;
     }
 
     /**
      * Pull the raw text content of the given URL. This call blocks until the
-     * operation has completed, and is synchronized because it uses a shared
+     * operation has completed, and is synchronised because it uses a shared
      * buffer {@link #sBuffer}.
      *
      * @param url The exact URL to request.
@@ -212,13 +210,13 @@ public class SimpleWikiHelper {
         }
 
         // Create client and set our specific user-agent string
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("User-Agent", sUserAgent);
-        request.setHeader("secret", API_SECRET);
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.setHeader("User-Agent", sUserAgent);
+        getRequest.setHeader("secret", API_SECRET);
 
         try {
-            HttpResponse response = client.execute(request);
+            HttpResponse response = httpClient.execute(getRequest);
 
             // Check if server response is valid
             StatusLine status = response.getStatusLine();
@@ -242,7 +240,7 @@ public class SimpleWikiHelper {
             // Return result from buffered stream
             return new String(content.toByteArray());
         } catch (IOException e) {
-            throw new ApiException("Problem communicating with API", e);
+            throw new ApiException("Problem communicating with API: " + e.getMessage());
         }
     }
 }

@@ -26,8 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,7 +57,7 @@ public class LookupActivity extends BaseActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        // Load preferences (might need to fix this, will be run each api call this way :()
+        // Load preferences (might need to fix this, will be run each API call this way :()
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SimpleWikiHelper.API_ROOT = sharedPref.getString("pref_serverurl", "");
         SimpleWikiHelper.API_SECRET = sharedPref.getString("pref_serversecret", "");
@@ -88,6 +86,12 @@ public class LookupActivity extends BaseActivity {
 
         // Handle incoming intents as possible searches or links
         onNewIntent(getIntent());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.lookup, menu);
+        return true;
     }
 
     /**
@@ -123,7 +127,7 @@ public class LookupActivity extends BaseActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        // On Enter keypress, open API call dialog
+        // On Enter key press, open API call dialog
         if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
         {
             onSearchRequested();
@@ -156,7 +160,7 @@ public class LookupActivity extends BaseActivity {
             }
 
         } else {
-            // If not recognized, then start showing random word
+            // If not recognised, then start showing random word
             startNavigating(null, true);
         }
     }
@@ -167,13 +171,7 @@ public class LookupActivity extends BaseActivity {
             // try to see if already exists
             MenuItem editItem = menu.findItem(ADD_ID);
             if (editItem == null) {
-                menu.add(
-                        0,
-                        ADD_ID,
-                        0,
-                        "Add"
-                        )
-                        .setIcon(android.R.drawable.ic_menu_add);
+                menu.add(0, ADD_ID, 0, "Add").setIcon(android.R.drawable.ic_menu_add);
             }
         } else {
             // we need to remove it when the condition fails
@@ -275,7 +273,7 @@ public class LookupActivity extends BaseActivity {
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
             Button buttonView;
-            if (convertView == null) {  // if it's not recycled, initialize some attributes
+            if (convertView == null) {  // if it's not recycled, initialise some attributes
                 buttonView = new Button(mContext);
                 //buttonView.setLayoutParams(new GridView.LayoutParams(85, 85));
                 //buttonView.setPadding(8, 8, 8, 8);
