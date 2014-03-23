@@ -28,7 +28,6 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,8 +41,7 @@ import org.json.JSONObject;
  * Base Jarvis activity include code for making API lookups
  */
 abstract class BaseActivity extends Activity implements AnimationListener {
-
-    protected GridView mGridView;
+	
     protected View mTitleBar;
     protected TextView mTitle;
     protected ProgressBar mProgress;
@@ -91,18 +89,6 @@ abstract class BaseActivity extends Activity implements AnimationListener {
      */
     void startNavigating(String word, boolean pushHistory) {
         Log.i("Jarvis", String.format("Start navigating: %s", word));
-
-        if (word == "server connect" || word == null) {
-            mGridView.setVisibility(View.VISIBLE);
-            mTitleBar.setVisibility(View.GONE);
-            mTitle.setVisibility(View.GONE);
-            mProgress.setVisibility(View.GONE);
-        } else {
-            mGridView.setVisibility(View.GONE);
-            mTitleBar.setVisibility(View.VISIBLE);
-            mTitle.setVisibility(View.VISIBLE);
-            mProgress.setVisibility(View.VISIBLE);
-        }
 
         // Start lookup for new word in background
         new LookupTask().execute(word);

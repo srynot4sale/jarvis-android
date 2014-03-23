@@ -26,12 +26,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,15 +43,22 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.support.v4.widget.DrawerLayout;
 
 
 /**
- * Activity that lets users browse through Wiktionary content. This is just the
+ * Activity that lets users browse Jarvis content. This is just the
  * user interface, and all API communication and parsing is handled in
  * {@link ExtendedWikiHelper}.
  */
 public class LookupActivity extends BaseActivity {
 
+    public String[] mDrawerTitles;
+    public String[] mDrawerActions;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    
     /**
      * {@inheritDoc}
      */
@@ -63,9 +74,32 @@ public class LookupActivity extends BaseActivity {
         SimpleWikiHelper.API_SECRET = sharedPref.getString("pref_serversecret", "");
 
         setContentView(R.layout.lookup);
+        
+        mDrawerTitles  = new String[] {"Home", "Server", "List"};
+        mDrawerActions = new String[] {"server connect", "server default", "list default"};
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        mGridView = (GridView) findViewById(R.id.gridview);
-        mGridView.setAdapter(new MenuAdapter(this));
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mDrawerTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                 /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                0,
+                0
+                ) {};
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+        
 
         // Load animations used to show/hide progress bar
         mSlideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in);
@@ -186,6 +220,12 @@ public class LookupActivity extends BaseActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        
         switch (item.getItemId()) {
         case R.id.lookup_apicall:
             openAPI("");
@@ -250,55 +290,13 @@ public class LookupActivity extends BaseActivity {
 
         startActivity(i);
     }
-
-    public class MenuAdapter extends BaseAdapter {
-        private Context mContext;
-
-        public MenuAdapter(Context c) {
-            mContext = c;
+    
+    
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            mDrawerList.setItemChecked(position, true);
+            mDrawerLayout.closeDrawer(mDrawerList);
+        	openLookup(mDrawerActions[position]);
         }
-
-        public int getCount() {
-            return mFunctions.length;
-        }
-
-        public Object getItem(int position) {
-            return null;
-        }
-
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        // create a new ImageView for each item referenced by the Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Button buttonView;
-            if (convertView == null) {  // if it's not recycled, initialise some attributes
-                buttonView = new Button(mContext);
-                //buttonView.setLayoutParams(new GridView.LayoutParams(85, 85));
-                //buttonView.setPadding(8, 8, 8, 8);
-            } else {
-                buttonView = (Button) convertView;
-            }
-
-            buttonView.setText(mFunctions[position]);
-
-            buttonView.setOnClickListener(new Button.OnClickListener() {
-                public void onClick(View v) {
-                    Button b = (Button)v;
-                    String buttonText = b.getText().toString();
-                    openLookup(buttonText+" default");
-
-                }
-            });
-
-            return buttonView;
-        }
-
-        // references to our images
-        private String[] mFunctions = {
-                "server",
-                "list"
-        };
     }
 }
