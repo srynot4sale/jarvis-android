@@ -41,7 +41,7 @@ import org.json.JSONObject;
  * Base Jarvis activity include code for making API lookups
  */
 abstract class BaseActivity extends Activity implements AnimationListener {
-	
+
     protected View mTitleBar;
     protected TextView mTitle;
     protected ProgressBar mProgress;
@@ -225,8 +225,7 @@ abstract class BaseActivity extends Activity implements AnimationListener {
             }
         }
 
-        mMessageView.setText(android.text.Html.fromHtml(message));
-        Linkify.addLinks(mMessageView, Linkify.ALL);
+        mMessageView.setText(message);
 
         if (dataArray == null || dataArray.length == 0) {
             Log.v("Jarvis", "No data items");
