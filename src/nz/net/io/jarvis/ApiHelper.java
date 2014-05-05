@@ -56,11 +56,6 @@ public class ApiHelper {
     public static String API_SECRET = "";
 
     /**
-     * {@link StatusLine} HTTP status code when no server error has occurred.
-     */
-    private static final int HTTP_STATUS_OK = 200;
-
-    /**
      * Shared buffer used by {@link #getUrlContent(String)} when reading results
      * from an API request.
      */
@@ -222,13 +217,6 @@ public class ApiHelper {
 
         try {
             HttpResponse response = httpClient.execute(getRequest);
-
-            // Check if server response is valid
-            StatusLine status = response.getStatusLine();
-            if (status.getStatusCode() != HTTP_STATUS_OK) {
-                throw new ApiException("Invalid response from server: " +
-                        status.toString());
-            }
 
             // Pull content stream from response
             HttpEntity entity = response.getEntity();
