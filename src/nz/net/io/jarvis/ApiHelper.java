@@ -36,13 +36,13 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 /**
- * Helper methods to simplify talking with and parsing responses from a
- * lightweight API. Before making any requests, you should call
+ * Helper methods to simplify requesting and parsing responses from
+ * the Jarvis server API. Before making any requests, you should call
  * {@link #prepareUserAgent(Context)} to generate a User-Agent string based on
  * your application package name and version.
  */
-public class SimpleWikiHelper {
-    private static final String TAG = "SimpleWikiHelper";
+public class ApiHelper {
+    private static final String TAG = "ApiHelper";
 
     /**
      * Jarvis URL. Use {@link String#format(String, Object...)} to insert
@@ -130,17 +130,22 @@ public class SimpleWikiHelper {
     }
 
     /**
-     * Create a URL from an API call
+     * Create a URL from an API call (or "action string")
      */
     public static String getPageURL(String call) {
         Log.i("Jarvis", String.format("Call: %s", call));
-        String url = "";
+
+        // Call's parts
         String function = "";
         String action = "";
         String data = "";
+
+        // Final URL
+        String url = "";
         Boolean isInternal = true;
 
-        // Check if this is a real url
+        // This is weird left-over support for external URLs
+        // Check if this is not a Jarvis URL
         if (call.length() >= 4 && call.substring(0, 4).equals("http")) {
             Integer length = API_ROOT.length();
             if (call.substring(0, length).equals(API_ROOT)) {
@@ -163,10 +168,12 @@ public class SimpleWikiHelper {
             if (parts.length > 2) {
                 data = Uri.encode(parts[2]);
             }
-            url = String.format("/api/%s/%s/%s", function, action, data);
+
+            // Final format
+            url = String.format("%s/api/%s/%s/%s", API_ROOT, function, action, data);
         }
 
-        Log.i("Jarvis", String.format("URL: %s", url));
+        Log.d("Jarvis", String.format("URL: %s", url));
 
         return url;
     }
@@ -184,13 +191,10 @@ public class SimpleWikiHelper {
     public static String getPageContent(String call)
             throws ApiException, ParseException {
 
+        // Generate URL
         String url = getPageURL(call);
 
-        if (url.length() >= 1 && url.substring(0, 1).equals("/")) {
-            url = String.format("%s%s", API_ROOT, url);
-        }
-
-        // Get content
+        // Get and return content of response
         String content = getUrlContent(url);
         return content;
     }
@@ -214,6 +218,7 @@ public class SimpleWikiHelper {
         HttpGet getRequest = new HttpGet(url);
         getRequest.setHeader("User-Agent", sUserAgent);
         getRequest.setHeader("secret", API_SECRET);
+        getRequest.setHeader("Client-UID", ""); //TODO
 
         try {
             HttpResponse response = httpClient.execute(getRequest);
