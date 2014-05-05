@@ -128,8 +128,8 @@ public class BaseActivity extends Activity implements AnimationListener {
 
         // Setup drawer
         // TODO load these from the server
-        mDrawerTitles  = new String[] {"Home", "Server", "List"};
-        mDrawerActions = new String[] {"server connect", "server default", "list default"};
+        mDrawerTitles  = new String[] {"Home", "Server", "List", "Logs", "Log Add"};
+        mDrawerActions = new String[] {"server connect", "server default", "list default", "log view", "log add %Log_entry"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
