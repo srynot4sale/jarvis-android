@@ -333,8 +333,6 @@ public class BaseActivity extends Activity implements AnimationListener {
         // Response title message
         String message = "";
 
-        // TODO add notification, redirect
-
         /**
          * Flag determining if the request made changes, in which case it can't be re-run
          * e.g. by being in the history stack
@@ -358,6 +356,15 @@ public class BaseActivity extends Activity implements AnimationListener {
                 // If state != success, append to message
                 if (state != 1) {
                     message = message + String.format(" (STATE: %s)", state);
+                }
+
+                // Display notification
+                // TODO add separate view
+                if (!json.isNull("notification")) {
+                    String notification = json.getString("notification");
+                    if (!TextUtils.isEmpty(notification)) {
+                        message = String.format("[%s]\n\n%s", notification, message);
+                    }
                 }
 
                 if (!json.isNull("write")) {
