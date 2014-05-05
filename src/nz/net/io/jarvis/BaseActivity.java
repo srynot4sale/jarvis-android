@@ -257,6 +257,12 @@ public class BaseActivity extends Activity implements AnimationListener {
     void startNavigating(String request) {
         Log.i("Jarvis", String.format("Start navigating: %s", request));
 
+        // If request includes the special character %, turn into an API dialog
+        if (request != null && request.contains("%")) {
+            openAPI(request);
+            return;
+        }
+
         // Start request in background
         new LookupTask().execute(request);
     }
