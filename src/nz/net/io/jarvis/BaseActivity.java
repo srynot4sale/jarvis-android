@@ -123,8 +123,11 @@ public class BaseActivity extends Activity implements AnimationListener {
         ApiHelper.API_ROOT = sharedPref.getString("pref_serverurl", "");
         ApiHelper.API_SECRET = sharedPref.getString("pref_serversecret", "");
 
+        // Set view
         setContentView(R.layout.lookup);
 
+        // Setup drawer
+        // TODO load these from the server
         mDrawerTitles  = new String[] {"Home", "Server", "List"};
         mDrawerActions = new String[] {"server connect", "server default", "list default"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
