@@ -22,18 +22,19 @@
         android:icon="@android:drawable/ic_menu_search" />
 
     <item
-        android:id="@+id/lookup_about"
-        android:title="@string/lookup_about"
-        android:icon="@android:drawable/ic_menu_help" />
-
+        android:id="@+id/lookup_preferences"
+        android:title="@string/lookup_preferences"
+        android:icon="@android:drawable/ic_menu_preferences" />
+    
     <item
         android:id="@+id/lookup_help"
         android:title="@string/lookup_help"
         android:icon="@android:drawable/ic_menu_help" />
 
     <item
-        android:id="@+id/lookup_preferences"
-        android:title="@string/lookup_preferences"
-        android:icon="@android:drawable/ic_menu_preferences" />
+        android:id="@+id/lookup_about"
+        android:title="@string/lookup_about"
+        android:icon="@android:drawable/ic_menu_help" />
 
+    
 </menu>

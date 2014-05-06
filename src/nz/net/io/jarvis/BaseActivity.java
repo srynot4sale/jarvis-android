@@ -79,6 +79,7 @@ public class BaseActivity extends Activity implements AnimationListener {
     protected Spanned[] dataArray;
     protected String[] urlArray;
     protected JSONObject[] actionArray;
+    protected JSONArray globalActionArray;
 
     /**
      * Displayed response's title - displayed in mTitle
@@ -108,6 +109,9 @@ public class BaseActivity extends Activity implements AnimationListener {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
+    // Track highest dynamic menu option ID (so we know what to remove)
+    private Integer lastOptionsMenuId = 0;
 
     /**
      * {@inheritDoc}
@@ -335,6 +339,7 @@ public class BaseActivity extends Activity implements AnimationListener {
         dataArray = null;           // This is each response line
         urlArray = null;            // This is the request string for each response line (if clickable)
         actionArray = null;         // These are the actions for each response line
+        globalActionArray = null;   // These are the global actions specified in response
 
         // Response title message
         String message = "";
@@ -375,6 +380,10 @@ public class BaseActivity extends Activity implements AnimationListener {
 
                 if (!json.isNull("write")) {
                     write = json.getInt("write");
+                }
+
+                if (!json.isNull("actions")) {
+                    globalActionArray = json.getJSONArray("actions");
                 }
 
                 if (!json.isNull("data")) {
@@ -512,17 +521,41 @@ public class BaseActivity extends Activity implements AnimationListener {
         return true;
     }
 
+    /**
+     * Track, add and remove all dynamic options
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mEntryTitle != null && mEntryTitle.length() > 9 && mEntryTitle.substring(0, 9).equals("list view")) {
-            // try to see if already exists
-            MenuItem editItem = menu.findItem(ADD_ID);
-            if (editItem == null) {
-                menu.add(0, ADD_ID, 0, "Add").setIcon(android.R.drawable.ic_menu_add);
+        // Start ID's at 1000 (other IDs are much, much higher)
+        Integer startId = 1000;
+        Integer i = startId;
+
+        // We need to remove all previous items
+        while (i <= lastOptionsMenuId) {
+            Log.d("Jarvis", "Removed options menu item " + i);
+            menu.removeItem(i);
+            i++;
+        }
+
+        // Check if any dynamic options specified for this response
+        if (globalActionArray != null && globalActionArray.length() > 0) {
+            // Add all to the menu
+            i = 0;
+            while (i < globalActionArray.length()) {
+                JSONArray item = globalActionArray.optJSONArray(i);
+                try {
+                    menu.add(0, startId + i, 0, item.getString(0));
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                Log.d("Jarvis", "Added options menu item " + (startId + i));
+                i++;
             }
-        } else {
-            // we need to remove it when the condition fails
-            menu.removeItem(ADD_ID);
+
+            // Record last ID
+            lastOptionsMenuId = startId + i - 1; // (to counter last i++)
+            Log.d("Jarvis", "Last options menu item added " + (startId + i));
         }
 
         return true;
@@ -539,23 +572,46 @@ public class BaseActivity extends Activity implements AnimationListener {
             return true;
         }
 
-        switch (item.getItemId()) {
+        Integer returnId = item.getItemId();
+
+        switch (returnId) {
+
         case R.id.lookup_apicall:
             openAPI("");
-            //onSearchRequested();
             return true;
+
         case R.id.lookup_help:
             openHelp();
             return true;
+
         case R.id.lookup_about:
             showAbout();
             return true;
-        case ADD_ID:
-            openAPI("list add " + mEntryTitle.substring(10) + " ");
-            return true;
+
         case R.id.lookup_preferences:
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+
+        default:
+            // Check if any global actions available. If so, check if this is one of them
+            // being selected
+            if (globalActionArray != null && globalActionArray.length() > 0) {
+                if (returnId >= 1000 && returnId <= lastOptionsMenuId) {
+                    Integer menuId = returnId - 1000;
+                    if (menuId < globalActionArray.length()) {
+                        JSONArray actionItem = globalActionArray.optJSONArray(menuId);
+
+                        try {
+                            openAPI(actionItem.getString(1));
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

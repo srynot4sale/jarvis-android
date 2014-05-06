@@ -70,9 +70,7 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <activity android:name="nz.net.io.jarvis.SettingsActivity"></activity>
-
-        <service android:name=".MyIntentService" />        
+        <activity android:name="nz.net.io.jarvis.SettingsActivity"></activity>        
     </application>
 
     <meta-data
