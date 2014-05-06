@@ -42,6 +42,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -618,9 +621,27 @@ public class BaseActivity extends Activity implements AnimationListener {
 
     public void openAPI(String defaultText) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        String title = "API call";
 
-        alert.setTitle("API Call");
-        //alert.setMessage("Message");
+        // If this is a dynamic call, change the header to match
+        // the request variable, and remove the var from the string
+        if (defaultText != null && defaultText.contains("%")) {
+            // Find dynamic part
+            Pattern pattern = Pattern.compile("(%[A-Za-z0-9_]+)");
+            Matcher matcher = pattern.matcher(defaultText);
+            if (matcher.find())
+            {
+                // Change title and clean up
+                title = matcher.group(1);
+                title = title.replace("%", "");
+                title = title.replace("_", " ");
+
+                // Remove from string
+                defaultText = defaultText.replace(matcher.group(1), "");
+            }
+        }
+
+        alert.setTitle(title);
 
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
