@@ -178,8 +178,9 @@ public class BaseActivity extends Activity implements AnimationListener {
         // Prepare User-Agent string for wiki actions
         ApiHelper.prepareUserAgent(this);
 
-        // Handle incoming intents as possible searches or links
-        onNewIntent(getIntent());
+        // Handle incoming intents
+        Intent intent = getIntent();
+        onNewIntent(intent);
     }
 
 
@@ -191,10 +192,13 @@ public class BaseActivity extends Activity implements AnimationListener {
     @Override
     public void onNewIntent(Intent intent) {
         final String action = intent.getAction();
+        final String type = intent.getType();
+
         if (Intent.ACTION_SEARCH.equals(action)) {
             // Start query for incoming search request
             String query = intent.getStringExtra(SearchManager.QUERY);
             startNavigating(query);
+            return;
 
         } else if (Intent.ACTION_VIEW.equals(action)) {
             // Treat as internal link only if valid Uri and host matches
@@ -203,12 +207,22 @@ public class BaseActivity extends Activity implements AnimationListener {
                     .equals(data.getHost())) {
                 String query = data.getPathSegments().get(0);
                 startNavigating(query);
+                return;
             }
 
-        } else {
-            // If not recognised, then start showing random word
-            startNavigating(null);
+        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    // Update UI to reflect text being shared
+                    startNavigating(String.format("list add tosort %s", sharedText));
+                    return;
+                }
+            }
         }
+
+        // If not recognised, navigate to default screen
+        startNavigating(null);
     }
 
 
