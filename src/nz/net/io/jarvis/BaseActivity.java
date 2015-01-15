@@ -215,7 +215,7 @@ public class BaseActivity extends Activity implements AnimationListener {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // Update UI to reflect text being shared
-                    startNavigating(String.format("list add tosort %s", sharedText));
+                    startNavigating(String.format("list add #tosort %s", sharedText));
                     return;
                 }
             }
