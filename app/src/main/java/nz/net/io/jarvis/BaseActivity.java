@@ -622,7 +622,7 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
                         JSONArray actionItem = globalActionArray.optJSONArray(menuId);
 
                         try {
-                            openAPI(actionItem.getString(1));
+                            startNavigating(actionItem.getString(1));
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
