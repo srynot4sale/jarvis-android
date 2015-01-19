@@ -657,6 +657,10 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
 
                 // Remove from string
                 defaultText = defaultText.replace(matcher.group(1), "");
+
+                // Remove default text wrapper
+                defaultText = defaultText.replace("{{", "");
+                defaultText = defaultText.replace("}}", "");
             }
         }
 
