@@ -1,4 +1,5 @@
-# built application files
+# Built application files
+/*/build/
 *.apk
 *.ap_
 
@@ -16,6 +17,6 @@ gen/
 local.properties
 *.classpath
 
-# Eclipse stuff
-.classpath
-.project
+# Android Studio
+.idea
+.gradle
