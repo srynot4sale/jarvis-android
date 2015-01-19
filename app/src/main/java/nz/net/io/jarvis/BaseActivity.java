@@ -16,8 +16,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -52,7 +54,7 @@ import org.json.JSONObject;
 /**
  * Base Jarvis activity including code for making API lookups
  */
-public class BaseActivity extends Activity implements AnimationListener {
+public class BaseActivity extends ActionBarActivity implements AnimationListener {
 
     /**
      * Various view objects
@@ -157,8 +159,9 @@ public class BaseActivity extends Activity implements AnimationListener {
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
 
         // Load animations used to show/hide progress bar
