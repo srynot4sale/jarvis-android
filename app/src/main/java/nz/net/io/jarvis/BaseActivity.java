@@ -832,6 +832,9 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         }
     }
 
+    /**
+     * This is used in openAPI to show the softkeyboard for the TextView.
+     */
     private Runnable mShowImeRunnable = new Runnable() {
         public void run() {
             InputMethodManager imm = (InputMethodManager) mApiView.getContext()
