@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -392,11 +393,14 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
                 }
 
                 // Display notification
-                // TODO add separate view
                 if (!json.isNull("notification")) {
                     String notification = json.getString("notification");
                     if (!TextUtils.isEmpty(notification)) {
-                        message = String.format("[%s]\n\n%s", notification, message);
+                        Context context = getApplicationContext();
+                        int duration = Toast.LENGTH_LONG;
+
+                        Toast toast = Toast.makeText(context, notification, duration);
+                        toast.show();
                     }
                 }
 
