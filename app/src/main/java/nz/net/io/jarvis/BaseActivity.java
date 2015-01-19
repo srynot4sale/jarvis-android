@@ -1,9 +1,5 @@
 package nz.net.io.jarvis;
 
-import nz.net.io.jarvis.ApiHelper.ApiException;
-import nz.net.io.jarvis.ApiHelper.ParseException;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -16,9 +12,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.Spanned;
@@ -33,8 +29,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -43,13 +40,17 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import nz.net.io.jarvis.ApiHelper.ApiException;
+import nz.net.io.jarvis.ApiHelper.ParseException;
 
 /**
  * Base Jarvis activity including code for making API lookups
@@ -64,6 +65,7 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
     protected ProgressBar mProgress;
     protected ListView mListView;
     protected TextView mMessageView;
+    protected EditText mApiView;
 
     /**
      * Animation for mTitleBar
@@ -661,14 +663,30 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         alert.setTitle(title);
 
         // Set an EditText view to get user input
-        final EditText input = new EditText(this);
-        input.setText(defaultText);
-        input.setSelection(input.getText().length());
-        alert.setView(input);
+        mApiView = new EditText(this);
+        mApiView.setText(defaultText);
+        mApiView.setSelection(mApiView.getText().length());
+        alert.setView(mApiView);
+
+        mApiView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mApiView.post(mShowImeRunnable);
+                } else {
+                    mApiView.removeCallbacks(mShowImeRunnable);
+                    InputMethodManager imm = (InputMethodManager) mApiView.getContext()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(mApiView.getWindowToken(), 0);
+                    }
+                }
+            }
+        });
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String value = input.getText().toString();
+                String value = mApiView.getText().toString();
                 startNavigating(value);
             }
         });
@@ -809,4 +827,15 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
             setEntryContent(parsedText);
         }
     }
+
+    private Runnable mShowImeRunnable = new Runnable() {
+        public void run() {
+            InputMethodManager imm = (InputMethodManager) mApiView.getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (imm != null) {
+                imm.showSoftInput(mApiView, 0);
+            }
+        }
+    };
 }
