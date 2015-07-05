@@ -413,6 +413,11 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
                     }
                 }
 
+                // Check if a redirect, and if it is update the api call in title
+                if (!json.isNull("redirected")) {
+                    setEntryTitle(json.getString("redirected"));
+                }
+
                 if (!json.isNull("write")) {
                     write = json.getInt("write");
                 }
