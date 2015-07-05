@@ -211,6 +211,7 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         if (Intent.ACTION_SEARCH.equals(action)) {
             // Start query for incoming search request
             String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("Jarvis", "Incoming search for: "+query);
             startNavigating(query);
             return;
 
