@@ -13,10 +13,12 @@ build/
 # generated files
 bin/
 gen/
+/app/*.log
 
 # Local configuration file (sdk path, etc)
 local.properties
 *.classpath
+/app/google-services.json
 
 # Android Studio
 .idea

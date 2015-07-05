@@ -41,11 +41,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,6 +138,10 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         ApiHelper.API_ROOT = sharedPref.getString("pref_serverurl", "");
         ApiHelper.API_SECRET = sharedPref.getString("pref_serversecret", "");
+
+        if (!sharedPref.getBoolean("gcm", false)) {
+            startService(new Intent(this, RegistrationIntentService.class));
+        }
 
         // Set view
         setContentView(R.layout.lookup);
