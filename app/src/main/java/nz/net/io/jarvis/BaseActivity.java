@@ -279,6 +279,21 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         return super.dispatchKeyEvent(event);
     }
 
+    /**
+     * Register client data with the server, and for now ignore failure
+     * @param name data's key
+     * @param value data's value
+     */
+    public static void registerData(String name, String value) {
+        Log.i("Jarvis", String.format("Registering data with server: %s | %s", name, value));
+        try {
+            ApiHelper.getPageContent(String.format("client registerdata %s %s", name, value));
+        } catch (ApiException e) {
+            Log.e("Jarvis", "Problem making request - API", e);
+        } catch (ParseException e) {
+            Log.e("Jarvis", "Problem making request - parse issue", e);
+        }
+    }
 
     /**
      * Start request in background, which updates the GUI when finished.
