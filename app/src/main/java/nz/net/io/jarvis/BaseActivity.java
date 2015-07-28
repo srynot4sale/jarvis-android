@@ -377,11 +377,11 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
          */
         Integer write = 0;
 
-        // Add result to debug log
-        Log.d("Jarvis", entryContent);
-
         // Check we got some form of content
         if (entryContent != null) {
+
+            // Add result to debug log
+            Log.d("Jarvis", entryContent);
 
             // Catch any exceptions
             try {
@@ -464,12 +464,15 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
             } catch (JSONException e) {
                 // Exception occurred when parsing response
                 Log.e("Jarvis", "Errors: "+e);
-                message = "<br>Unparseable:<br>" + entryContent;
+                message = "Unparseable:\n" + entryContent;
             }
         } else {
             // Response is NULL
-            message += "<h3 style=\"margin-bottom: 2px; padding: 0;\">ERROR</h3>";
-            message += "<p>Server unavailable</p>";
+
+            // Add result to debug log
+            Log.d("Jarvis", "Server unavailable");
+
+            message += "ERROR: Server unavailable";
         }
 
         // Push any current URL onto the history stack if it's not a write action
