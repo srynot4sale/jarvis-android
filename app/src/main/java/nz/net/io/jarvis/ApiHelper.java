@@ -190,8 +190,7 @@ public class ApiHelper {
         String url = getPageURL(call);
 
         // Get and return content of response
-        String content = getUrlContent(url);
-        return content;
+        return getUrlContent(url);
     }
 
     /**

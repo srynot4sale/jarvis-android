@@ -41,15 +41,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -796,18 +791,6 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
                 // Default query
                 if (call == null) {
                     call = "server connect";
-                }
-
-                // Split query into function, action and data
-                String[] split = call.split(" ", 2);
-                if (split.length > 0) {
-                    function = split[0];
-                }
-                if (split.length > 1) {
-                    action = split[1];
-                }
-                if (split.length > 2) {
-                    data = split[2];
                 }
 
                 // Update mTitle with the query

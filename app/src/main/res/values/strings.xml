@@ -20,8 +20,6 @@
     <string name="app_descrip"><![CDATA[Jarvis android client.<br /><a href="$URL">Get</a> update.]]></string>
     <string name="app_credits">Aaron Barnes &lt;aaron@io.net.nz&gt;</string>
     <string name="template_user_agent" translatable="false">"%1$s/%2$s (Linux; Android)"</string>
-    <string name="template_wotd_title">"Wiktionary:Word of the day/%1$s %2$s"</string>
-    <string name="template_define_url" translatable="false">"http://en.wiktionary.org/wiki/%s"</string>
 
     <string name="search_label">Call</string>
     <string name="search_hint">API call</string>
