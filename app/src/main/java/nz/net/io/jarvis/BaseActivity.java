@@ -514,13 +514,13 @@ public class BaseActivity extends ActionBarActivity {
         // If they have an associated action, do that
         OnItemClickListener mItemClickedHandler = new OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                String actionstring = urlArray[position];
-                if (actionstring == "null" || actionstring == null) {
+                String actionString = urlArray[position];
+                if (actionString.equals("null")) {
                     return;
                 }
 
                 // If it has an action, do it
-                startNavigating(actionstring);
+                startNavigating(actionString);
             }
         };
         mListView.setOnItemClickListener(mItemClickedHandler);
