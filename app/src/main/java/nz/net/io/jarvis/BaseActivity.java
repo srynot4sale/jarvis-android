@@ -29,8 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -55,7 +53,7 @@ import nz.net.io.jarvis.ApiHelper.ParseException;
 /**
  * Base Jarvis activity including code for making API lookups
  */
-public class BaseActivity extends ActionBarActivity implements AnimationListener {
+public class BaseActivity extends ActionBarActivity {
 
     /**
      * Various view objects
@@ -169,18 +167,6 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-
-        // Load animations used to show/hide progress bar
-        mSlideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in);
-        mSlideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out);
-
-        // Listen for the "in" animation so we make the progress bar visible
-        // only after the sliding has finished.
-        mSlideIn.setAnimationListener(this);
-
-        mTitleBar = findViewById(R.id.title_bar);
-        mTitle = (TextView) findViewById(R.id.title);
-        mProgress = (ProgressBar) findViewById(R.id.progress);
         mMessageView = (TextView) findViewById(R.id.messageview);
         mListView = (ListView) findViewById(R.id.listview);
 
@@ -362,10 +348,20 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
     /**
      * Set the title (normally the request string).
      */
-    protected void setEntryTitle(String entryText) {
-        if (mTitle != null) {
-            mEntryTitle = entryText;
-            mTitle.setText(mEntryTitle);
+    protected void setTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(title);
+    }
+
+    /**
+     * Enable loading indicator
+     */
+    protected void indicateLoading(Boolean toggle) {
+        ActionBar actionBar = getSupportActionBar();
+        if (toggle == null || toggle == Boolean.TRUE) {
+            actionBar.setSubtitle("Loading...");
+        } else {
+            actionBar.setSubtitle("");
         }
     }
 
@@ -425,7 +421,7 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
 
                 // Check if a redirect, and if it is update the api call in title
                 if (!json.isNull("redirected")) {
-                    setEntryTitle(json.getString("redirected"));
+                    setTitle(json.getString("redirected"));
                 }
 
                 if (!json.isNull("write")) {
@@ -760,22 +756,6 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
         }
     }
 
-
-    /**
-     * Make the {@link ProgressBar} visible when our in-animation finishes.
-     */
-    public void onAnimationEnd(Animation animation) {
-        mProgress.setVisibility(View.VISIBLE);
-    }
-
-    public void onAnimationRepeat(Animation animation) {
-        // Not interested if the animation repeats
-    }
-
-    public void onAnimationStart(Animation animation) {
-        // Not interested when the animation starts
-    }
-
     /**
      * Background task to handle API requests. This correctly shows and
      * hides the loading animation from the GUI thread before starting a
@@ -784,17 +764,6 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
      */
     protected class LookupTask extends AsyncTask<String, String, String> {
         private static final String TAG = "LookupTask";
-
-        /**
-         * Before jumping into background thread, start sliding in the
-         * {@link ProgressBar}. We'll only show it once the animation finishes.
-         */
-        @Override
-        protected void onPreExecute() {
-            if (mTitleBar != null) {
-                mTitleBar.startAnimation(mSlideIn);
-            }
-        }
 
         /**
          * Perform the background query using {@link ApiHelper}, which
@@ -811,13 +780,11 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
                     call = "server connect";
                 }
 
-                // Update mTitle with the query
+                // Update title with the query
                 publishProgress(call);
 
                 // Load response and return
                 response = ApiHelper.getPageContent(call);
-
-                // TODO handle redirect with publishProgress
             } catch (ApiException e) {
                 Log.e(TAG, "Problem making request - API", e);
             } catch (ParseException e) {
@@ -832,8 +799,8 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
          */
         @Override
         protected void onProgressUpdate(String... args) {
-            String call = args[0];
-            setEntryTitle(call);
+            setTitle(args[0]);
+            indicateLoading(true);
         }
 
         /**
@@ -842,11 +809,7 @@ public class BaseActivity extends ActionBarActivity implements AnimationListener
          */
         @Override
         protected void onPostExecute(String parsedText) {
-            if (mTitleBar != null) {
-                mTitleBar.startAnimation(mSlideOut);
-                mProgress.setVisibility(View.INVISIBLE);
-            }
-
+            indicateLoading(false);
             setEntryContent(parsedText);
         }
     }

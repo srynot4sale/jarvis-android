@@ -28,41 +28,6 @@
 	    android:background="#ffffff"
 	    android:orientation="vertical"
 	    android:textColor="#444444" >
-	
-	    <LinearLayout
-	        android:id="@+id/title_bar"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="center_vertical"
-	        android:orientation="horizontal"
-	        android:background="#999999" >
-	
-	        <ProgressBar
-	            android:id="@+id/progress"
-	            android:layout_width="18dip"
-	            android:layout_height="18dip"
-	            android:layout_marginLeft="10dip"
-	            android:indeterminateBehavior="repeat"
-	            android:indeterminateDrawable="@drawable/progress_spin"
-	            android:indeterminateDuration="3500"
-	            android:indeterminateOnly="true"
-	            android:paddingRight="10dip"
-	            android:textColor="#ffffff" />
-	
-	        <TextView
-	            android:id="@+id/title"
-	            style="@style/LookupTitle"
-	            android:layout_width="0dip"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:background="#999999"
-	            android:paddingBottom="10dip"
-	            android:paddingLeft="0dip"
-	            android:paddingRight="10dip"
-	            android:paddingTop="10dip"
-	            android:textColor="#ffffff" />
-	    </LinearLayout>
-	
 	    <TextView
 	        android:id="@+id/messageview"
 	        android:layout_width="match_parent"
